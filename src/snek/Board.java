@@ -36,7 +36,8 @@ public class Board extends JPanel
     class KeyAction implements KeyListener{
 
 		@Override
-		public void keyTyped(KeyEvent e) {}
+        public void keyTyped(KeyEvent e) {
+        }
 
 		@Override
 		public void keyPressed(KeyEvent e) {
@@ -53,6 +54,8 @@ public class Board extends JPanel
 			case 'd':
 				snek.move(Direction.RIGHT);
 				break;
+            case 'q':
+                System.exit(0);
 			}
 		}
 
