@@ -21,6 +21,7 @@ public class Application extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);        
     }
+    
 
     public static void main(String[] args) {
         

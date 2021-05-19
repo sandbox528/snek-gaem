@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -30,7 +31,7 @@ public class Board extends JPanel
     
     private KeyAction ka = new KeyAction();
     
-    Snake snek = new Snake();
+    Snake snek;
     
     class KeyAction implements KeyListener{
 
@@ -76,6 +77,16 @@ public class Board extends JPanel
         setBackground(Color.WHITE);
         setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
         Snake.cellSize = 30;
+        ArrayList<int[]> body = new ArrayList<int[]>();
+        int[] cell = new int[2];
+        
+        cell = new int[]{0,0};
+        body.add(cell.clone());
+        cell = new int[]{1,0};
+        body.add(cell);
+        cell = new int[]{2,0};
+        snek = new Snake(cell,body);
+        
 
     }
 
