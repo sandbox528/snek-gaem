@@ -32,8 +32,9 @@ public class Board extends JPanel
     private KeyAction ka = new KeyAction();
     
     Snake snek;
-    
+
     class KeyAction implements KeyListener{
+
 
 		@Override
         public void keyTyped(KeyEvent e) {
@@ -41,6 +42,8 @@ public class Board extends JPanel
 
 		@Override
 		public void keyPressed(KeyEvent e) {
+          
+
 			switch(e.getKeyChar()) {
 			case 'w':
 				snek.move(Direction.UP);
@@ -73,10 +76,9 @@ public class Board extends JPanel
     	setFocusable(true);
 
     	this.addKeyListener(ka);
-    	tm = new Timer(15, new TimerListener());
-    	tm.start();
+    	new Timer(15, new TimerListener()).start();
  
-    	 
+        
         setBackground(Color.WHITE);
         setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
         Snake.cellSize = 30;
@@ -104,22 +106,14 @@ public class Board extends JPanel
 
     }
 
-
-    //This runs each frame
-    private void cycle() {
-    	snek.update();
-    }
-
-
     private class TimerListener implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			cycle();
+            snek.update();
 			repaint();
 			
 		}
     }
-
     
 }

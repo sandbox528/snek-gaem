@@ -101,23 +101,33 @@ public class Snake {
 			dir = nextDir;
 			
 		}
-		
-
 	}
 
+
+// Conditionally sets new direction 
 	public void move(Direction dir) {
-		if (   (this.dir == Direction.LEFT || this.dir == Direction.RIGHT)
-			&& (dir == Direction.UP || dir == Direction.DOWN)) 
-		{
-			nextDir = dir;
-		}
-		
-		if (   (this.dir == Direction.UP || this.dir == Direction.DOWN)
-				&& (dir == Direction.LEFT || dir == Direction.RIGHT)) 
-		{
-			nextDir = dir;
-		}
+
+      switch (dir) {
+        case LEFT:
+        case RIGHT:
+
+          if (this.dir == Direction.UP || this.dir == Direction.DOWN) {
+            nextDir = dir;
+          }
+          break;
+
+        case UP:
+        case DOWN:
+
+          if (this.dir == Direction.LEFT || this.dir == Direction.RIGHT) {
+            nextDir = dir;
+          }
+
+          break;
+
+        default:
+          break;
+      }
 	}
-    
 }
 
