@@ -13,7 +13,7 @@ public class Snake {
 	public static int cellSize = 30;
 	
 	//# of frames to move across 1 cell
-	private final int SPEED = 30;
+	private final int SPEED = 10;
 	//Counts number of frames moved, resets at next cell
 	private int AnimationStep = 0;
 	//list of cells that compose the snek's body
@@ -25,6 +25,8 @@ public class Snake {
 	Direction dir = Direction.RIGHT;
 	//Holds the next direction until the snake can turn
 	Direction nextDir = Direction.RIGHT;
+	
+	private boolean growing, dead = false;
 
 	Snake() {
 	}
@@ -39,8 +41,14 @@ public class Snake {
 	}
 	
 	public void draw (Graphics2D g) {
-		g.setStroke(new BasicStroke(25,BasicStroke.CAP_ROUND,BasicStroke.JOIN_ROUND));
-		g.setColor(Color.decode("#008000"));
+		g.setStroke(new BasicStroke(cellSize*0.85f,BasicStroke.CAP_ROUND,BasicStroke.JOIN_ROUND));
+		
+		if (dead)
+			g.setColor(Color.decode("#602000"));
+		else
+			g.setColor(Color.decode("#008000"));
+		
+		
 		
 		double offset = (((double)AnimationStep/(double)SPEED));
 		double[] offsetHead = Arrays.stream(head).asDoubleStream().toArray();;
@@ -61,8 +69,14 @@ public class Snake {
 		int[] xCoords = new int[body.size()+2];
 		int[] yCoords = new int[body.size()+2];
 		
-		xCoords[0] = (int)((body.get(0)[0]+((double)AnimationStep/SPEED)*(body.get(1)[0]-body.get(0)[0]))*cellSize)+cellSize/2;
-		yCoords[0] = (int)((body.get(0)[1]+((double)AnimationStep/SPEED)*(body.get(1)[1]-body.get(0)[1]))*cellSize)+cellSize/2;
+		if (growing) {
+			xCoords[0] = (body.get(0)[0]*cellSize)+cellSize/2;
+			yCoords[0] = (body.get(0)[1]*cellSize)+cellSize/2;
+		}
+		else {
+			xCoords[0] = (int)((body.get(0)[0]+((double)AnimationStep/SPEED)*(body.get(1)[0]-body.get(0)[0]))*cellSize)+cellSize/2;
+			yCoords[0] = (int)((body.get(0)[1]+((double)AnimationStep/SPEED)*(body.get(1)[1]-body.get(0)[1]))*cellSize)+cellSize/2;
+		}
 		for (int i=1; i<body.size(); i++) {
 
 				xCoords[i] = body.get(i)[0]*cellSize+cellSize/2;
@@ -84,7 +98,10 @@ public class Snake {
 		if (AnimationStep>=SPEED) {
 			AnimationStep = 0;
 			body.add(head.clone());
-			body.remove(0);
+			if (growing)
+				growing = false;
+			else
+				body.remove(0);
 			switch (dir) {
 			case RIGHT:
 				head[0]++;
@@ -129,5 +146,41 @@ public class Snake {
           break;
       }
 	}
+	
+	public boolean occupiesCell(int x, int y){
+		int[] cell = new int[2];
+		cell[0] = x; cell[1]=y;
+		
+		if (Arrays.equals(head,cell))
+			return true;
+		for (int[] location: body)
+			if (Arrays.equals(location, cell))
+				return true;
+			return false;
+	}
+	
+	public boolean checkCollision(int boardWidth, int boardHeight) {
+		if (head[0]<=0 && dir==Direction.LEFT)
+			dead = true;
+		if (head[0]>=boardWidth-1 && dir==Direction.RIGHT)
+			dead = true;
+		if (head[1]<=0 && dir==Direction.UP)
+			dead = true;
+		if (head[1]>=boardHeight-1 && dir==Direction.DOWN)
+			dead = true;
+		
+		if (dead)
+			return true;
+		
+		for (int[] cell:body) {
+			if (Arrays.equals(cell, head)) {
+				dead = true;
+				break;
+			}
+		}
+		return dead;
+		}
+	
+	public void grow() {growing = true;}
 }
 
