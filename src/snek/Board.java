@@ -17,16 +17,20 @@ import javax.swing.Timer;
 
 import snek.Snake.Direction;
 
+
 public class Board extends JPanel
     {
 	
 	public enum State {STARTMENU, GAME}
 
 	//Game Board dimensions in # of cells:
-    private final int B_WIDTH = 12, B_HEIGHT = 12;
+    static private final int B_WIDTH = 12, B_HEIGHT = 12;
+    static public int a = 1;
     
     //Size of cell in pixels
-    private final int CELL_SIZE = 30;
+    static private final int CELL_SIZE = 30;
+
+    static public int X = B_WIDTH * CELL_SIZE, Y = B_HEIGHT * CELL_SIZE;
     
     private KeyAction ka = new KeyAction();
 
@@ -36,6 +40,7 @@ public class Board extends JPanel
     Timer tm = new Timer(15, new TimerListener());
     Snake snek;
     Apple apple;
+    StartMenu startmenu;
 
     class KeyAction implements KeyListener{
 
@@ -92,6 +97,9 @@ public class Board extends JPanel
         initBoard();
     }
 
+    public int getWidthPixels() {
+        return this.X;
+    }
 
     private void initBoard() {
     	setFocusable(true);
@@ -115,6 +123,7 @@ public class Board extends JPanel
         snek = new Snake(cell,body);
         
         apple = new Apple(B_WIDTH,B_HEIGHT,snek);
+        startmenu = new StartMenu();
 
     }
     
@@ -124,11 +133,10 @@ public class Board extends JPanel
     		snek.grow();
     		apple = new Apple(B_WIDTH,B_HEIGHT,snek);
     	}
-    	
+
     	if (snek.checkCollision(B_WIDTH, B_HEIGHT)) {
     		tm.stop();
     	}
-    	
     }
 
     //This draws the graphics for each frame:
@@ -137,10 +145,10 @@ public class Board extends JPanel
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-
+        
         switch (currentState) {
             case STARTMENU:
-                g2.drawString("Press s to start!",20,20);
+                startmenu.draw(g2);
                 break;
 
             case GAME:
@@ -154,16 +162,12 @@ public class Board extends JPanel
     }
 
     private class TimerListener implements ActionListener{
-
 		@Override
 		public void actionPerformed(ActionEvent e) {
-
             if (currentState == State.GAME) {
                 update();
 			    repaint();
             }
-			
 		}
     }
-    
 }
