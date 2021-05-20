@@ -27,6 +27,9 @@ public class Board extends JPanel
     private final int CELL_SIZE = 30;
     
     private KeyAction ka = new KeyAction();
+
+    //Starts out in the "startmenu" state
+    private String state = "startmenu";
     
     Timer tm = new Timer(15, new TimerListener());
     Snake snek;
@@ -34,6 +37,14 @@ public class Board extends JPanel
 
     class KeyAction implements KeyListener{
 
+        public void startmenuAction(char c)  {
+            switch (c) {
+            //Switches to the "game" state when user presses 's'
+            case 's':
+                state = "game";
+            }
+
+        }
 
 		@Override
         public void keyTyped(KeyEvent e) {
@@ -42,6 +53,10 @@ public class Board extends JPanel
 		@Override
 		public void keyPressed(KeyEvent e) {
           
+            if (state == "startmenu") {
+                startmenuAction(e.getKeyChar());
+                return;
+            }
 
 			switch(e.getKeyChar()) {
 			case 'w':
@@ -115,17 +130,31 @@ public class Board extends JPanel
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-        apple.draw(g2);
-        snek.draw(g2);
 
+        switch (state) {
+            case "startmenu":
+                g2.drawString("Press s to start!",20,20);
+                break;
+
+            case "game":
+                apple.draw(g2);
+                snek.draw(g2);
+                break;
+
+            default:
+                break;
+        }
     }
 
     private class TimerListener implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-            update();
-			repaint();
+
+            if (state == "game") {
+                update();
+			    repaint();
+            }
 			
 		}
     }
