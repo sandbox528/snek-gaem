@@ -20,6 +20,8 @@ import snek.Snake.Direction;
 public class Board extends JPanel
     {
 	
+	public enum State {STARTMENU, GAME}
+
 	//Game Board dimensions in # of cells:
     private final int B_WIDTH = 12, B_HEIGHT = 12;
     
@@ -29,7 +31,7 @@ public class Board extends JPanel
     private KeyAction ka = new KeyAction();
 
     //Starts out in the "startmenu" state
-    private String state = "startmenu";
+    private State currentState = State.STARTMENU;
     
     Timer tm = new Timer(15, new TimerListener());
     Snake snek;
@@ -37,28 +39,18 @@ public class Board extends JPanel
 
     class KeyAction implements KeyListener{
 
-        public void startmenuAction(char c)  {
+        //Switches to the "game" state when user presses 's'
+        public void startmenuKeyAction(char c)  {
             switch (c) {
-            //Switches to the "game" state when user presses 's'
             case 's':
-                state = "game";
+                currentState = State.GAME;
             }
 
         }
 
-		@Override
-        public void keyTyped(KeyEvent e) {
-        }
-
-		@Override
-		public void keyPressed(KeyEvent e) {
-          
-            if (state == "startmenu") {
-                startmenuAction(e.getKeyChar());
-                return;
-            }
-
-			switch(e.getKeyChar()) {
+        //Main key actions for when the game is running
+        public void gameKeyAction(char c) {
+			switch(c) {
 			case 'w':
 				snek.move(Direction.UP);
 				break;
@@ -74,6 +66,21 @@ public class Board extends JPanel
             case 'q':
                 System.exit(0);
 			}
+        }
+
+		@Override
+        public void keyTyped(KeyEvent e) {
+        }
+
+        //Dispatch key presses based on state
+		@Override
+		public void keyPressed(KeyEvent e) {
+          
+            if (currentState == State.STARTMENU) {
+                startmenuKeyAction(e.getKeyChar());
+                return;
+            }
+            gameKeyAction(e.getKeyChar());
 		}
 
 		@Override
@@ -131,12 +138,12 @@ public class Board extends JPanel
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
 
-        switch (state) {
-            case "startmenu":
+        switch (currentState) {
+            case STARTMENU:
                 g2.drawString("Press s to start!",20,20);
                 break;
 
-            case "game":
+            case GAME:
                 apple.draw(g2);
                 snek.draw(g2);
                 break;
@@ -151,7 +158,7 @@ public class Board extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent e) {
 
-            if (state == "game") {
+            if (currentState == State.GAME) {
                 update();
 			    repaint();
             }
