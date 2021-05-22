@@ -8,6 +8,7 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
@@ -17,157 +18,123 @@ import javax.swing.Timer;
 
 import snek.Snake.Direction;
 
+public class Board extends JPanel {
 
-public class Board extends JPanel
-    {
-	
-	public enum State {STARTMENU, GAME}
-
-	//Game Board dimensions in # of cells:
+    // Game Board dimensions in # of cells:
     static private final int B_WIDTH = 12, B_HEIGHT = 12;
     static public int a = 1;
-    
-    //Size of cell in pixels
+
+    // Size of cell in pixels
     static private final int CELL_SIZE = 30;
 
     static public int X = B_WIDTH * CELL_SIZE, Y = B_HEIGHT * CELL_SIZE;
-    
+
     private KeyAction ka = new KeyAction();
 
-    //Starts out in the "startmenu" state
-    private State currentState = State.STARTMENU;
-    
+    // Starts out in the "startmenu" state
     Timer tm = new Timer(15, new TimerListener());
     Snake snek;
     Apple apple;
     StartMenu startmenu;
 
-    class KeyAction implements KeyListener{
+    class KeyAction implements KeyListener {
 
-        //Switches to the "game" state when user presses 's'
-        public void startmenuKeyAction(char c)  {
-            switch (c) {
-            case 's':
-                currentState = State.GAME;
-            }
-
-        }
-
-        //Main key actions for when the game is running
+        // Main key actions for when the game is running
         public void gameKeyAction(char c) {
-			switch(c) {
-			case 'w':
-				snek.move(Direction.UP);
-				break;
-			case 'a':
-				snek.move(Direction.LEFT);
-				break;
-			case 's':
-				snek.move(Direction.DOWN);
-				break;
-			case 'd':
-				snek.move(Direction.RIGHT);
-				break;
+            switch (c) {
+            case 'w':
+                snek.move(Direction.UP);
+                break;
+            case 'a':
+                snek.move(Direction.LEFT);
+                break;
+            case 's':
+                snek.move(Direction.DOWN);
+                break;
+            case 'd':
+                snek.move(Direction.RIGHT);
+                break;
             case 'q':
                 System.exit(0);
-			}
+            }
         }
 
-		@Override
+        @Override
         public void keyTyped(KeyEvent e) {
         }
 
-        //Dispatch key presses based on state
-		@Override
-		public void keyPressed(KeyEvent e) {
-          
-            if (currentState == State.STARTMENU) {
-                startmenuKeyAction(e.getKeyChar());
-                return;
-            }
-            gameKeyAction(e.getKeyChar());
-		}
+        // Dispatch key presses based on state
+        @Override
+        public void keyPressed(KeyEvent e) {
 
-		@Override
-		public void keyReleased(KeyEvent e) {}
-		
+            gameKeyAction(e.getKeyChar());
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+        }
+
     }
-    
+
     public Board() {
+    }
+
+    public void Run() {
         initBoard();
     }
 
-    public int getWidthPixels() {
-        return this.X;
-    }
-
     private void initBoard() {
-    	setFocusable(true);
+        setFocusable(true);
 
-    	this.addKeyListener(ka);
-    	tm.start();
- 
-        
+        this.addKeyListener(ka);
+        tm.start();
+
         setBackground(Color.WHITE);
-        setPreferredSize(new Dimension(B_WIDTH*CELL_SIZE, B_HEIGHT*CELL_SIZE));
+        setPreferredSize(new Dimension(B_WIDTH * CELL_SIZE, B_HEIGHT * CELL_SIZE));
         Snake.cellSize = CELL_SIZE;
         Apple.cellSize = CELL_SIZE;
         ArrayList<int[]> body = new ArrayList<int[]>();
         int[] cell = new int[2];
-        
-        cell = new int[]{0,0};
+
+        cell = new int[] { 0, 0 };
         body.add(cell.clone());
-        cell = new int[]{1,0};
+        cell = new int[] { 1, 0 };
         body.add(cell);
-        cell = new int[]{2,0};
-        snek = new Snake(cell,body);
-        
-        apple = new Apple(B_WIDTH,B_HEIGHT,snek);
+        cell = new int[] { 2, 0 };
+        snek = new Snake(cell, body);
+
+        apple = new Apple(B_WIDTH, B_HEIGHT, snek);
         startmenu = new StartMenu();
 
     }
-    
-    private void update() {
-    	snek.update();
-    	if (snek.occupiesCell(apple.getX(), apple.getY())) {
-    		snek.grow();
-    		apple = new Apple(B_WIDTH,B_HEIGHT,snek);
-    	}
 
-    	if (snek.checkCollision(B_WIDTH, B_HEIGHT)) {
-    		tm.stop();
-    	}
+    private void update() {
+        snek.update();
+        if (snek.occupiesCell(apple.getX(), apple.getY())) {
+            snek.grow();
+            apple = new Apple(B_WIDTH, B_HEIGHT, snek);
+        }
+
+        if (snek.checkCollision(B_WIDTH, B_HEIGHT)) {
+            tm.stop();
+        }
     }
 
-    //This draws the graphics for each frame:
+    // This draws the graphics for each frame:
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-        
-        switch (currentState) {
-            case STARTMENU:
-                startmenu.draw(g2);
-                break;
-
-            case GAME:
-                apple.draw(g2);
-                snek.draw(g2);
-                break;
-
-            default:
-                break;
-        }
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        apple.draw(g2);
+        snek.draw(g2);
     }
 
-    private class TimerListener implements ActionListener{
-		@Override
-		public void actionPerformed(ActionEvent e) {
-            if (currentState == State.GAME) {
-                update();
-			    repaint();
-            }
-		}
+    private class TimerListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            update();
+            repaint();
+        }
     }
 }
