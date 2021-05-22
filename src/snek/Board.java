@@ -12,7 +12,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -27,21 +26,23 @@ public class Board extends JPanel {
     // Size of cell in pixels
     static private final int CELL_SIZE = 30;
 
-    static public int X = B_WIDTH * CELL_SIZE, Y = B_HEIGHT * CELL_SIZE;
-
     private KeyAction ka = new KeyAction();
 
     // Starts out in the "startmenu" state
     Timer tm = new Timer(15, new TimerListener());
     Snake snek;
     Apple apple;
-    StartMenu startmenu;
 
     class KeyAction implements KeyListener {
 
-        // Main key actions for when the game is running
-        public void gameKeyAction(char c) {
-            switch (c) {
+        @Override
+        public void keyTyped(KeyEvent e) {
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            // Main key actions when the game is running
+            switch (e.getKeyChar()) {
             case 'w':
                 snek.move(Direction.UP);
                 break;
@@ -60,23 +61,9 @@ public class Board extends JPanel {
         }
 
         @Override
-        public void keyTyped(KeyEvent e) {
-        }
-
-        // Dispatch key presses based on state
-        @Override
-        public void keyPressed(KeyEvent e) {
-
-            gameKeyAction(e.getKeyChar());
-        }
-
-        @Override
         public void keyReleased(KeyEvent e) {
         }
 
-    }
-
-    public Board() {
     }
 
     public void Run() {
@@ -91,6 +78,7 @@ public class Board extends JPanel {
 
         setBackground(Color.WHITE);
         setPreferredSize(new Dimension(B_WIDTH * CELL_SIZE, B_HEIGHT * CELL_SIZE));
+
         Snake.cellSize = CELL_SIZE;
         Apple.cellSize = CELL_SIZE;
         ArrayList<int[]> body = new ArrayList<int[]>();
@@ -104,8 +92,6 @@ public class Board extends JPanel {
         snek = new Snake(cell, body);
 
         apple = new Apple(B_WIDTH, B_HEIGHT, snek);
-        startmenu = new StartMenu();
-
     }
 
     private void update() {
